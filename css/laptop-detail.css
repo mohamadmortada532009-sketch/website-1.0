@@ -1,0 +1,213 @@
+/*
+ * Laptop detail dialog styling.
+ *
+ * A modal that shows a device's picture, specs, price and use cases. Built on
+ * the native <dialog> element (same pattern as the vendor portal), so it uses
+ * ::backdrop for the dim overlay and closes with the ESC key for free.
+ */
+
+.laptop-detail {
+  width: min(760px, calc(100vw - 40px));
+  max-height: 88vh;
+  padding: 26px;
+  border-radius: 16px;
+  background: #142021;
+  border: 1px solid var(--accent, #f06b45);
+  box-shadow: 18px 18px 0 rgba(240, 107, 69, 0.2);
+  color: #edf5f0;
+  overflow: auto;
+}
+
+.laptop-detail::backdrop {
+  background: rgba(4, 8, 10, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.laptop-detail .close {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted, #a7aaa9);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.laptop-detail .close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #edf5f0;
+}
+
+.laptop-detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* -- Visual / image area -- */
+.laptop-detail-visual {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  border: 1px dashed rgba(150, 190, 255, 0.4);
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgba(120, 86, 214, 0.22), transparent 70%),
+    linear-gradient(150deg, rgba(24, 32, 66, 0.9), rgba(12, 16, 38, 0.9));
+  overflow: hidden;
+}
+
+.laptop-detail-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.laptop-detail-placeholder {
+  color: #9fb4e6;
+  font: 600 11px 'Space Grotesk', sans-serif;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* -- Info column -- */
+.laptop-detail-info h2 {
+  margin: 6px 0 14px;
+  font: 700 clamp(24px, 3vw, 34px)/1.05 'Space Grotesk', sans-serif;
+  letter-spacing: -1px;
+  color: #eaf2ff;
+}
+
+.laptop-detail-specs,
+.laptop-detail-uses ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.laptop-detail-specs li {
+  position: relative;
+  padding-left: 16px;
+  color: #cfe0ff;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.laptop-detail-specs li::before {
+  content: '▹';
+  position: absolute;
+  left: 0;
+  color: var(--accent, #f06b45);
+}
+
+.laptop-detail-price {
+  margin: 18px 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent-2, #ffb35c);
+  background: rgba(240, 107, 69, 0.08);
+  color: #ffd9a8;
+  font: 700 18px 'Space Grotesk', sans-serif;
+}
+
+.laptop-detail-uses small {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent, #f06b45);
+  font: 700 10px 'Space Grotesk', sans-serif;
+  letter-spacing: 2px;
+}
+
+.laptop-detail-uses ul {
+  gap: 6px;
+}
+
+.laptop-detail-uses li {
+  position: relative;
+  padding-left: 16px;
+  color: #b9c9e6;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.laptop-detail-uses li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #7fa8e6;
+}
+
+/* -- Light mode -- */
+.light-mode .laptop-detail {
+  background: #ffffff;
+  color: var(--ink, #182526);
+  border-color: #d5d0c5;
+  box-shadow: 16px 16px 0 rgba(201, 154, 98, 0.18);
+}
+
+.light-mode .laptop-detail-info h2 {
+  color: #182526;
+}
+
+.light-mode .laptop-detail-visual {
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgba(120, 86, 214, 0.12), transparent 70%),
+    linear-gradient(150deg, #eef2fb, #dfe6f5);
+  border-color: rgba(90, 120, 200, 0.35);
+}
+
+.light-mode .laptop-detail-placeholder {
+  color: #50608c;
+}
+
+.light-mode .laptop-detail-specs li {
+  color: #3a4a6b;
+}
+
+.light-mode .laptop-detail-uses li {
+  color: #4a5878;
+}
+
+.light-mode .laptop-detail-price {
+  color: #8a5220;
+  background: rgba(201, 154, 98, 0.12);
+}
+
+/* -- Small screens: stack the two columns -- */
+@media (max-width: 620px) {
+  .laptop-detail {
+    padding: 20px;
+  }
+
+  .laptop-detail-body {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .laptop-detail-visual {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .laptop-detail[open] {
+    animation: laptop-detail-in 0.22s ease-out;
+  }
+
+  @keyframes laptop-detail-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}

@@ -1,0 +1,30 @@
+﻿<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>probe</title>
+</head>
+
+<body>
+  <div id="search"></div><input id="hero-search">
+  <select id="region"></select><select id="type"></select>
+  <button id="clear"></button><button id="hero-button"></button>
+  <div id="count"></div>
+  <div id="cards"></div>
+  <div id="pins"></div>
+  <dialog id="vendor"></dialog><button data-close></button>
+  <form id="vendor-form"></form>
+  <script>window.__probeErrors = []; window.addEventListener('error', e => window.__probeErrors.push(String(e.message)));</script>
+  <script src="app.js"></script>
+  <script>
+    window.__probeState = {
+      hasGetStoreData: typeof window.getStoreData,
+      storeCount: typeof window.getStoreData === 'function' ? window.getStoreData().length : -1,
+      errors: window.__probeErrors,
+      cards: document.querySelectorAll('#cards .card').length,
+    };
+  </script>
+</body>
+
+</html>

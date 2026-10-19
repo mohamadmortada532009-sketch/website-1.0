@@ -1,0 +1,201 @@
+/*
+ * Hero "Field Atlas" interactivity.
+ *
+ * The whole illustration responds to the pointer: each layer drifts at a
+ * different depth (a light parallax), the floating device cards lift and glow,
+ * and the location pins pulse. All motion is driven by two custom properties
+ * (--mx, --my) that hero-interactive.js writes as the mouse moves, so the
+ * transforms stay in CSS and the JS only reports the cursor position.
+ */
+
+.hero-art {
+  /* --mx/--my are normalised to -1..1 and set by JS; 0 keeps it centred. */
+  --mx: 0;
+  --my: 0;
+  --depth: 1;
+  cursor: crosshair;
+}
+
+/* Smooth spring-back when the pointer leaves, snappy while it is inside. */
+.hero-art,
+.hero-art .floating,
+.hero-art .orbit,
+.hero-art .north,
+.hero-art .beirut,
+.hero-art .south,
+.hero-art .pin {
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    filter 0.35s ease;
+}
+
+/* While the pointer is inside, follow it tightly instead of easing back. */
+.hero-art.is-active,
+.hero-art.is-active .floating,
+.hero-art.is-active .orbit,
+.hero-art.is-active .north,
+.hero-art.is-active .beirut,
+.hero-art.is-active .south,
+.hero-art.is-active .pin {
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    filter 0.35s ease;
+}
+
+/*
+ * NOTE: .hero-art::before and ::after are owned by hero-space.css, which
+ * paints the two parallax star layers. The cursor glow that used to sit on
+ * ::after was removed — against the luminous cosmic scene it was redundant,
+ * and reusing the pseudo would have collided with the starfield.
+ */
+
+/* -- Floating device cards: the front-most layer, drifts most. -- */
+.hero-art .floating {
+  will-change: transform;
+  transform:
+    translate3d(calc(var(--mx) * 14px * var(--depth)), calc(var(--my) * 10px * var(--depth)), 0)
+    rotate(var(--tilt, 0deg));
+}
+
+.hero-art.is-active .floating {
+  border-color: rgba(240, 107, 69, 0.55);
+  box-shadow:
+    16px 18px 0 rgba(118, 198, 194, 0.2),
+    0 0 26px rgba(240, 107, 69, 0.22);
+}
+
+/* Keep the original hand-rotated resting angles, layered with the parallax. */
+.hero-art .floating.laptop {
+  --tilt: -4deg;
+}
+
+.hero-art .floating.pc {
+  --tilt: 4deg;
+}
+
+/* Individual lift when a card itself is hovered. */
+.hero-art .floating:hover {
+  transform:
+    translate3d(calc(var(--mx) * 14px * var(--depth)), calc(var(--my) * 10px * var(--depth) - 6px), 0)
+    rotate(var(--tilt, 0deg))
+    scale(1.04);
+  z-index: 5;
+}
+
+/* -- Region labels: mid layer, gentler drift. -- */
+.hero-art .north,
+.hero-art .beirut,
+.hero-art .south {
+  will-change: transform;
+  transform: translate3d(calc(var(--mx) * 8px), calc(var(--my) * 6px), 0);
+}
+
+.hero-art.is-active .north,
+.hero-art.is-active .beirut,
+.hero-art.is-active .south {
+  border-color: rgba(240, 107, 69, 0.6);
+  color: var(--accent);
+}
+
+/* -- Pins: react most, and pulse while the atlas is active. -- */
+.hero-art .pin {
+  will-change: transform;
+  transform: translate3d(calc(var(--mx) * 20px), calc(var(--my) * 15px), 0);
+}
+
+.hero-art.is-active .pin {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 6px rgba(240, 107, 69, 0.16);
+  animation: hero-pin-pulse 1.6s ease-in-out infinite;
+}
+
+.hero-art.is-active .pin.p2 {
+  animation-delay: 0.25s;
+}
+
+.hero-art.is-active .pin.p3 {
+  animation-delay: 0.5s;
+}
+
+/* The pins themselves stay clickable targets on hover. */
+.hero-art .pin:hover {
+  transform: translate3d(calc(var(--mx) * 20px), calc(var(--my) * 15px), 0) scale(1.35);
+  background: var(--accent);
+  color: var(--base);
+}
+
+/* -- Orbits: the back layer, drifting opposite for depth. -- */
+.hero-art .orbit {
+  will-change: transform;
+}
+
+.hero-art .orbit.one {
+  transform: translate3d(calc(var(--mx) * -10px), calc(var(--my) * -8px), 0) rotate(-18deg);
+}
+
+.hero-art .orbit.two {
+  transform: translate3d(calc(var(--mx) * -16px), calc(var(--my) * -12px), 0) rotate(32deg);
+}
+
+.hero-art.is-active .orbit {
+  border-color: rgba(118, 198, 194, 0.45);
+}
+
+@keyframes hero-pin-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(240, 107, 69, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 0 9px rgba(240, 107, 69, 0.22);
+  }
+}
+
+/* Touch devices have no hover: fall back to a gentle auto-float. */
+@media (hover: none) {
+  .hero-art {
+    cursor: default;
+  }
+  .hero-art::after {
+    display: none;
+  }
+}
+
+/* Honour reduced-motion preferences: keep hover styling, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-art,
+  .hero-art .floating,
+  .hero-art .orbit,
+  .hero-art .north,
+  .hero-art .beirut,
+  .hero-art .south,
+  .hero-art .pin {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  .hero-art .floating,
+  .hero-art .north,
+  .hero-art .beirut,
+  .hero-art .south,
+  .hero-art .pin {
+    transform: none;
+  }
+  .hero-art .floating.laptop {
+    transform: rotate(-4deg);
+  }
+  .hero-art .floating.pc {
+    transform: rotate(4deg);
+  }
+  .hero-art .orbit.one {
+    transform: rotate(-18deg);
+  }
+  .hero-art .orbit.two {
+    transform: rotate(32deg);
+  }
+  .hero-art.is-active .pin {
+    animation: none;
+  }
+}
